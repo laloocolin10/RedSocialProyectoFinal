@@ -1,38 +1,19 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
 
-// 1. Importa las páginas que acabamos de crear
-import HomePage from "./pages/HomePage.js";
-import LoginPage from "./pages/LoginPage.js";
-import ProfilePage from "./pages/ProfilePage.js";
+// 1. Importamos nuestro nuevo componente Navbar
+import Navbar from "./components/Navbar.tsx";
+
 export default function App() {
   return (
-    // 2. BrowserRouter activa la navegación en toda la app
     <BrowserRouter>
-      {/* 3. Damos el estilo elegante base a toda la app */}
       <div className="min-h-screen bg-gray-900 text-white p-8">
-        {/* 4. Esta es nuestra barra de navegación */}
-        <nav className="p-4 bg-gray-800 rounded-lg mb-6">
-          <Link
-            to="/"
-            className="mr-4 text-lg font-semibold text-orange-400 hover:text-orange-300"
-          >
-            Inicio
-          </Link>
-          <Link
-            to="/profile"
-            className="mr-4 text-lg font-semibold text-orange-400 hover:text-orange-300"
-          >
-            Perfil
-          </Link>
-          <Link
-            to="/login"
-            className="text-lg font-semibold text-orange-400 hover:text-orange-300"
-          >
-            Login
-          </Link>
-        </nav>
+        {/* 2. Reemplazamos todo el <nav> de antes por nuestro componente */}
+        <Navbar />
 
-        {/* 5. Aquí es donde React Router decide qué página mostrar */}
+        {/* 3. Las rutas quedan igual */}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<ProfilePage />} />
