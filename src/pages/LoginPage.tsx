@@ -1,36 +1,28 @@
 import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext.tsx";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  // 1. Estados para guardar lo que el usuario escribe
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  // 2. Función que se ejecuta al enviar el formulario
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que la página se recargue
-
-    // --- Simulación de Autenticación ---
-    // En un proyecto real, aquí llamarías a tu API.
-    // Para este proyecto, creamos un usuario falso.
+    e.preventDefault();
     console.log("Iniciando sesión con:", email, password);
 
     const fakeUser = {
       id: "u1",
       email: email,
-      name: "Lalo Colin", // Puedes poner un nombre de prueba
+      name: "Lalo Colin", // Puedes cambiar esto
     };
 
-    // 3. Guardamos el usuario en localStorage
-    // localStorage es un pequeño almacén en el navegador.
-    // Lo guardamos como texto (JSON.stringify)
-    localStorage.setItem("social-app-user", JSON.stringify(fakeUser));
-
-    alert("¡Inicio de sesión exitoso! (Simulado)");
-    // Más adelante, aquí redirigiremos al usuario al inicio.
+    login(fakeUser);
+    navigate("/");
   };
 
   return (
-    // --- Formulario Estilizado con Tailwind ---
     <div className="max-w-md mx-auto mt-10 p-8 bg-gray-800 rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold text-white text-center mb-6">
         Inicio de Sesión

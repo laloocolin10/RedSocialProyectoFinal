@@ -1,38 +1,69 @@
 import React, { useState, useEffect } from "react";
-// 1. Importamos nuestro nuevo componente Post y su "forma" (interface)
 import Post, { PostData } from "../components/Post.tsx";
+import CreatePostForm from "../components/CreatePostForm.tsx";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 export default function HomePage() {
-  // 2. Estado para guardar la lista de posts
   const [posts, setPosts] = useState<PostData[]>([]);
-  // 3. Estado para saber si estamos cargando
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  // 4. useEffect se ejecuta una vez, cuando el componente se monta
+  // Cargar posts iniciales
   useEffect(() => {
-    // 5. Definimos una función asíncrona para cargar los datos
     const fetchPosts = async () => {
       try {
-        // 6. Usamos la API falsa sugerida  (limitamos a 10 posts)
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/posts?_limit=10"
         );
         const data = await response.json();
-
-        // 7. Guardamos los posts en el estado
         setPosts(data);
       } catch (error) {
         console.error("Error al cargar los posts:", error);
       } finally {
-        // 8. Dejamos de cargar (incluso si hubo un error)
         setLoading(false);
       }
     };
+    fetchPosts();
+  }, []);
 
-    fetchPosts(); // 9. Llamamos a la función
-  }, []); // El array vacío [] asegura que solo se ejecute una vez
+  // Función para añadir un post
+  const handleAddPost = (body: string) => {
+    const newPost: PostData = {
+      id: Date.now(),
+      userId: user ? parseInt(user.id.replace("u", "")) : 0,
+      title: "Mi Nueva Publicación",
+      body: body,
+    };
+    setPosts([newPost, ...posts]);
+  };
 
-  // 10. Mostramos un mensaje de carga
+  // Función para eliminar un post
+  const handleDeletePost = (id: number) => {
+    const updatedPosts = posts.filter((post) => post.id !== id);
+    setPosts(updatedPosts);
+  };
+
+  // --- ¡NUEVA FUNCIÓN! ---
+  // Función para actualizar un post
+  const handleUpdatePost = (id: number, newBody: string) => {
+    // 1. Mapeamos el array de posts
+    const updatedPosts = posts.map((post) => {
+      // 2. Si el ID no coincide, devolvemos el post original
+      if (post.id !== id) {
+        return post;
+      }
+      // 3. Si el ID coincide, devolvemos un NUEVO objeto post
+      // con el 'body' actualizado.
+      return {
+        ...post, // Copia todas las propiedades (id, title, etc.)
+        body: newBody, // Sobrescribe solo el 'body'
+      };
+    });
+    // 4. Actualizamos el estado con el nuevo array
+    setPosts(updatedPosts);
+    // NOTA: En un proyecto real, aquí harías una llamada "PUT" o "PATCH" a tu API.
+  };
+
   if (loading) {
     return (
       <h1 className="text-3xl font-bold text-white text-center">
@@ -41,17 +72,23 @@ export default function HomePage() {
     );
   }
 
-  // 11. Una vez cargado, mostramos el feed
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-8">
         Feed de Publicaciones
       </h1>
 
-      {/* 12. Mapeamos (recorremos) el array de posts y renderizamos un componente <Post> por cada uno */}
+      <CreatePostForm onAddPost={handleAddPost} />
+
       <div>
         {posts.map((post) => (
-          <Post key={post.id} post={post} />
+          <Post
+            key={post.id}
+            post={post}
+            onDeletePost={handleDeletePost}
+            // 5. ¡Pasamos la nueva prop de actualizar!
+            onUpdatePost={handleUpdatePost}
+          />
         ))}
       </div>
     </div>

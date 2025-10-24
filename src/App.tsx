@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import Navbar from "./components/Navbar.tsx";
 
-// 1. Importamos nuestro nuevo componente de protección
+// 1. Importamos nuestro componente de protección
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 export default function App() {
@@ -12,9 +12,9 @@ export default function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-gray-900 text-white p-8">
         <Navbar />
+
         <Routes>
           {/* --- RUTAS PROTEGIDAS --- */}
-          {/* Envolvemos HomePage con ProtectedRoute */}
           <Route
             path="/"
             element={
@@ -23,7 +23,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* Envolvemos ProfilePage con ProtectedRoute */}
           <Route
             path="/profile"
             element={
@@ -34,7 +33,6 @@ export default function App() {
           />
 
           {/* --- RUTA PÚBLICA --- */}
-          {/* Dejamos LoginPage como estaba, ya que debe ser pública */}
           <Route path="/login" element={<LoginPage />} />
         </Routes>
       </div>

@@ -25,7 +25,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 // 4. Creamos el "Proveedor" del Contexto
-// Este es el componente que envolverá nuestra app
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true); // Empezamos cargando
@@ -55,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
-      {/* Solo mostramos la app cuando ya no estamos cargando */}
     </AuthContext.Provider>
   );
 }
