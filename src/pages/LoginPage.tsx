@@ -12,10 +12,19 @@ export default function LoginPage() {
     e.preventDefault();
     console.log("Iniciando sesión con:", email, password);
 
+    // --- ¡AQUÍ ESTÁ EL CAMBIO! ---
+    // Creamos el objeto de usuario más completo
     const fakeUser = {
       id: "u1",
-      email: email,
-      name: "Lalo Colin", // Puedes cambiar esto
+      email: email, // Usa el email del formulario
+      name: "Lalo Colin", // Tu nombre
+      // --- DATOS SIMULADOS PARA EL PERFIL ---
+      username: "lalocolin10",
+      bio: "Desarrollador React creando una red social con Gemini. 🚀",
+      profilePicUrl: "https://i.pravatar.cc/150?u=lalocolin10", // Una foto de perfil aleatoria
+      coverPicUrl: "https://picsum.photos/seed/reactproject/1000/300", // Un banner aleatorio
+      following: 142,
+      followers: 87,
     };
 
     login(fakeUser);

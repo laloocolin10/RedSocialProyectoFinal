@@ -1,11 +1,9 @@
 import React from "react";
-import { useAuth } from "../contexts/AuthContext.tsx"; // Importamos useAuth
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 export default function ProfilePage() {
-  // Obtenemos al usuario del contexto
   const { user } = useAuth();
 
-  // Verificación por si acaso (aunque la ruta está protegida)
   if (!user) {
     return (
       <h1 className="text-3xl font-bold text-white">No estás logueado.</h1>
@@ -13,18 +11,61 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-8 bg-gray-800 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-white text-center mb-6">
-        Perfil de Usuario
-      </h1>
-      <div className="text-gray-300">
-        <p className="mb-4">
-          <span className="font-semibold text-orange-400">Nombre:</span>{" "}
-          {user.name}
-        </p>
-        <p>
-          <span className="font-semibold text-orange-400">Email:</span>{" "}
-          {user.email}
+    // Contenedor principal del perfil
+    <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      {/* --- Banner o Foto de Portada --- */}
+      <div>
+        <img
+          src={user.coverPicUrl}
+          alt="Foto de portada"
+          className="w-full h-48 object-cover"
+        />
+      </div>
+
+      {/* --- Contenido Principal (Avatar, Info, Stats) --- */}
+      <div className="p-6">
+        {/* --- Avatar y Botón de Editar (flotantes) --- */}
+        <div className="relative">
+          <img
+            src={user.profilePicUrl}
+            alt="Foto de perfil"
+            // Esta magia posiciona el avatar sobre el banner
+            className="w-32 h-32 rounded-full border-4 border-gray-900 -mt-20"
+          />
+        </div>
+
+        {/* --- Información del Usuario --- */}
+        <div className="mt-4">
+          <h1 className="text-3xl font-bold text-white">{user.name}</h1>
+          <p className="text-gray-400 text-sm">@{user.username}</p>
+
+          <p className="text-gray-300 mt-4">{user.bio}</p>
+
+          <p className="text-gray-400 text-sm mt-4">Email: {user.email}</p>
+        </div>
+
+        {/* --- Stats (Siguiendo/Seguidores) --- */}
+        <div className="flex space-x-6 mt-6 border-t border-gray-700 pt-4">
+          <div>
+            <span className="font-bold text-white">{user.following}</span>
+            <span className="text-gray-400 ml-2">Siguiendo</span>
+          </div>
+          <div>
+            <span className="font-bold text-white">{user.followers}</span>
+            <span className="text-gray-400 ml-2">Seguidores</span>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Pestaña de Publicaciones (futuro) --- */}
+      <div className="border-t border-gray-700 px-6 py-4">
+        <h2 className="text-xl font-bold text-white">Publicaciones</h2>
+      </div>
+
+      {/* --- Feed del Usuario (aquí irían sus posts) --- */}
+      <div className="p-6">
+        <p className="text-gray-400 text-center">
+          Las publicaciones de {user.name} aparecerán aquí.
         </p>
       </div>
     </div>

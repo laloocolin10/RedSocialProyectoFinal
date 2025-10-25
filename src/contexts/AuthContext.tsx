@@ -6,11 +6,17 @@ import React, {
   ReactNode,
 } from "react";
 
-// 1. Definimos la "forma" de nuestro usuario
+// 1. Definimos la "forma" de nuestro usuario (CON MÁS DATOS)
 interface User {
   id: string;
   email: string;
   name: string;
+  username: string; // <-- NUEVO
+  bio: string; // <-- NUEVO
+  profilePicUrl: string; // <-- NUEVO
+  coverPicUrl: string; // <-- NUEVO
+  following: number; // <-- NUEVO
+  followers: number; // <-- NUEVO
 }
 
 // 2. Definimos lo que nuestro Contexto va a proveer
