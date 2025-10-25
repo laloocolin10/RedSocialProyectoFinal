@@ -6,17 +6,18 @@ import React, {
   ReactNode,
 } from "react";
 
-// 1. Definimos la "forma" de nuestro usuario (CON MÁS DATOS)
-interface User {
+// 1. Definimos la "forma" COMPLETA de nuestro usuario
+// ¡La exportamos y añadimos todos los campos!
+export interface User {
   id: string;
   email: string;
   name: string;
-  username: string; // <-- NUEVO
-  bio: string; // <-- NUEVO
-  profilePicUrl: string; // <-- NUEVO
-  coverPicUrl: string; // <-- NUEVO
-  following: number; // <-- NUEVO
-  followers: number; // <-- NUEVO
+  username: string;
+  bio: string;
+  profilePicUrl: string;
+  coverPicUrl: string;
+  following: number;
+  followers: number;
 }
 
 // 2. Definimos lo que nuestro Contexto va a proveer
@@ -28,47 +29,50 @@ interface AuthContextType {
 }
 
 // 3. Creamos el Contexto
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 4. Creamos el "Proveedor" del Contexto
-export function AuthProvider({ children }: { children: ReactNode }) {
+// 4. Creamos el componente "Proveedor" que envolverá nuestra App
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Empezamos cargando
+  const [loading, setLoading] = useState(true);
 
-  // 5. Efecto para verificar localStorage cuando la app carga
+  // 5. Revisamos localStorage al cargar la app
   useEffect(() => {
-    const storedUser = localStorage.getItem("social-app-user");
+    // Revisa la sesión activa (el usuario logueado)
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Si hay un usuario, lo ponemos en el estado
+      setUser(JSON.parse(storedUser));
     }
     setLoading(false); // Terminamos de cargar
   }, []);
 
-  // 6. Función de Login
+  // 6. Definimos la función de login
   const login = (userData: User) => {
-    localStorage.setItem("social-app-user", JSON.stringify(userData));
+    // Guarda al usuario ACTIVO en 'user'
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
-  // 7. Función de Logout
+  // 7. Definimos la función de logout
   const logout = () => {
-    localStorage.removeItem("social-app-user");
+    // Borra al usuario ACTIVO de 'user'
+    localStorage.removeItem("user");
     setUser(null);
   };
 
-  // 8. Proveemos el valor a todos los componentes "hijos"
+  // 8. Pasamos los valores al Provider
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
-}
+};
 
-// 9. Creamos un "hook" personalizado para usar el contexto fácilmente
-export function useAuth() {
+// 9. Creamos un Hook personalizado para usar el contexto
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useAuth debe ser usado dentro de un AuthProvider");
   }
   return context;
-}
+};
