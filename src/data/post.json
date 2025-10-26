@@ -1,0 +1,26 @@
+[
+    {
+      "id": "p1",
+      "authorUsername": "lalocolin10",
+      "authorName": "Lalo Colin",
+      "authorPic": "https://i.pravatar.cc/150?u=lalocolin10",
+      "text": "¡Creando mi primera red social con React y Tailwind! 🚀",
+      "timestamp": "2025-10-26T12:00:00Z"
+    },
+    {
+      "id": "p2",
+      "authorUsername": "AmigoReact",
+      "authorName": "Amigo de Lalo",
+      "authorPic": "https://i.pravatar.cc/150?u=amigo",
+      "text": "¡Qué bien está quedando el proyecto! El login funciona.",
+      "timestamp": "2025-10-26T12:05:00Z"
+    },
+    {
+      "id": "p3",
+      "authorUsername": "OtroUsuario",
+      "authorName": "Usuario Random",
+      "authorPic": "https://i.pravatar.cc/150?u=random",
+      "text": "Me acabo de registrar para probar esta app. Saludos.",
+      "timestamp": "2025-10-26T12:10:00Z"
+    }
+  ]
