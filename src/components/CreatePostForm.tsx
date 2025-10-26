@@ -1,54 +1,62 @@
 import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext.tsx"; // Importa useAuth
 
-// 1. Definimos las props: solo esperamos una función
+// 1. Define las 'props' que este componente recibirá
 interface CreatePostFormProps {
-  // Esta función recibirá el texto del post y no devolverá nada
-  onAddPost: (body: string) => void;
+  // Recibe una función 'onSubmit' que toma un string (el texto del post)
+  onSubmit: (newPostText: string) => void;
 }
 
-export default function CreatePostForm({ onAddPost }: CreatePostFormProps) {
-  // 2. Estado local para guardar lo que el usuario escribe en el textarea
-  const [body, setBody] = useState("");
+export default function CreatePostForm({ onSubmit }: CreatePostFormProps) {
+  // 2. Estado local para guardar lo que el usuario está escribiendo
+  const [postText, setPostText] = useState("");
+  const { user } = useAuth(); // Obtiene el usuario para mostrar su foto
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Evitamos que la página se recargue
+    e.preventDefault(); // Evita que la página se recargue
+    if (postText.trim() === "") return; // No enviar posts vacíos
 
-    // 3. Validación simple: no enviar posts vacíos
-    if (!body.trim()) {
-      return;
-    }
-
-    // 4. Llamamos a la función que nos pasaron por props
-    onAddPost(body);
-
-    // 5. Limpiamos el textarea después de enviar
-    setBody("");
+    onSubmit(postText); // 3. Llama a la función 'handleNewPost' de HomePage
+    setPostText(""); // 4. Limpia el cuadro de texto
   };
 
+  // Si no hay usuario, no se debe poder postear
+  if (!user) {
+    return (
+      <div className="bg-gray-800 p-4 rounded-lg text-center text-gray-400">
+        Inicia sesión para poder publicar.
+      </div>
+    );
+  }
+
   return (
-    // 6. Formulario estilizado con Tailwind
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8"
+      className="bg-gray-800 p-4 rounded-lg shadow-md flex space-x-4"
     >
-      <h2 className="text-2xl font-bold text-white mb-4">
-        Crear nueva publicación
-      </h2>
-      <textarea
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-        rows={4}
-        placeholder="¿Qué estás pensando?"
+      {/* Foto de perfil del usuario */}
+      <img
+        src={user.profilePicUrl}
+        alt="Tu perfil"
+        className="w-12 h-12 rounded-full"
       />
-      <div className="text-right mt-4">
-        <button
-          type="submit"
-          className="bg-orange-500 text-white font-bold py-2 px-6 rounded-md hover:bg-orange-600 transition duration-300"
-        >
-          Publicar
-        </button>
-      </div>
+
+      {/* Input de texto */}
+      <textarea
+        value={postText}
+        onChange={(e) => setPostText(e.target.value)}
+        placeholder="¿Qué estás pensando?"
+        className="flex-1 bg-gray-700 p-3 rounded-md text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        rows={3}
+      />
+
+      {/* Botón de enviar */}
+      <button
+        type="submit"
+        className="bg-orange-500 text-white font-bold px-6 py-2 rounded-md hover:bg-orange-600 transition duration-300 self-end"
+      >
+        Publicar
+      </button>
     </form>
   );
 }
