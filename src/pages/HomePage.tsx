@@ -1,54 +1,121 @@
-import React, { useState } from "react";
-
-// --- ¡ESTAS LÍNEAS FALTABAN! ---
+// ¡Añadimos useCallback!
+import React, { useState, useEffect, useCallback } from "react";
 import Post from "../components/Post.tsx";
 import CreatePostForm from "../components/CreatePostForm.tsx";
-import mockPosts from "../data/post.json"; // 1. Importa los datos
-import { useAuth } from "../contexts/AuthContext.tsx"; // 2. Importa el hook de Auth
+import { useAuth } from "../contexts/AuthContext.tsx";
+import postsData from "../data/post.json"; // Usando tu archivo 'post.json'
+
+interface PostData {
+  id: string;
+  authorId: string;
+  authorUsername: string;
+  authorName: string;
+  authorPic: string;
+  text: string;
+  timestamp: string;
+}
 
 export default function HomePage() {
-  // --- ¡ESTA LÍNEA FALTABA! ---
-  // 3. Define 'posts' y 'setPosts' usando el JSON importado
-  const [posts, setPosts] = useState(mockPosts);
-
-  // 4. Obtiene el usuario actual para saber quién publica
+  const [posts, setPosts] = useState<PostData[]>([]);
   const { user } = useAuth();
 
-  // --- ¡ESTA FUNCIÓN ESTABA VACÍA! ---
-  // 5. Define la lógica para crear un nuevo post
-  const handleNewPost = (newPostText: string) => {
-    if (!user) {
-      alert("Necesitas iniciar sesión para publicar.");
-      return;
+  // Este useEffect está correcto con '[]'
+  useEffect(() => {
+    const storedPosts = localStorage.getItem("posts_db");
+    if (storedPosts) {
+      setPosts(JSON.parse(storedPosts));
+    } else {
+      localStorage.setItem("posts_db", JSON.stringify(postsData));
+      setPosts(postsData);
     }
+  }, []); // <-- ¡Asegúrate de que este array esté VACÍO!
 
-    // 6. Crea el objeto del nuevo post
-    const newPost = {
-      id: "p" + Date.now(),
-      authorUsername: user.username,
-      authorName: user.name,
-      authorPic: user.profilePicUrl,
-      text: newPostText,
-      timestamp: new Date().toISOString(),
-    };
+  // --- ¡CORRECCIÓN! ---
+  // Envolvemos 'updatePosts' en useCallback.
+  // Se re-creará solo si 'posts' (el estado) cambia.
+  const updatePosts = useCallback((newPosts: PostData[]) => {
+    const sortedPosts = newPosts.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+    setPosts(sortedPosts);
+    localStorage.setItem("posts_db", JSON.stringify(sortedPosts));
+  }, []); // Depende del 'setPosts' que es estable, pero lo dejamos vacío.
 
-    // 7. Actualiza el estado, poniendo el nuevo post al inicio
-    setPosts([newPost, ...posts]);
-  };
+  // Envolvemos 'handleAddPost' en useCallback
+  const handleAddPost = useCallback(
+    (text: string) => {
+      if (!user) return;
 
-  // --- TU CÓDIGO (ESTO YA LO TENÍAS) ---
+      const newPost: PostData = {
+        id: crypto.randomUUID(),
+        authorId: user.id,
+        authorName: user.name,
+        authorUsername: user.username,
+        authorPic: user.profilePicUrl,
+        text: text,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Pasamos el array actual a updatePosts para evitar la dependencia de 'posts'
+      setPosts((currentPosts) => {
+        const newPosts = [newPost, ...currentPosts];
+        const sortedPosts = newPosts.sort(
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+        localStorage.setItem("posts_db", JSON.stringify(sortedPosts));
+        return sortedPosts;
+      });
+    },
+    [user]
+  ); // Depende de 'user'
+
+  // Envolvemos 'handleDeletePost' en useCallback
+  const handleDeletePost = useCallback((id: string) => {
+    setPosts((currentPosts) => {
+      const newPosts = currentPosts.filter((post) => post.id !== id);
+      localStorage.setItem("posts_db", JSON.stringify(newPosts));
+      return newPosts;
+    });
+  }, []);
+
+  // Envolvemos 'handleUpdatePost' en useCallback
+  const handleUpdatePost = useCallback((id: string, newText: string) => {
+    setPosts((currentPosts) => {
+      const newPosts = currentPosts.map((post) =>
+        post.id === id ? { ...post, text: newText } : post
+      );
+      localStorage.setItem("posts_db", JSON.stringify(newPosts));
+      return newPosts;
+    });
+  }, []);
+
+  if (!user) {
+    return (
+      <div className="sticky top-0 z-10 ...">
+        <h1 className="text-xl font-bold text-white">Cargando...</h1>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-xl mx-auto">
-      <h1 className="text-3xl font-bold text-orange-400 mb-6">Inicio</h1>
+    <div>
+      <div className="sticky top-0 z-10 backdrop-blur-md bg-gray-900 bg-opacity-80 border-b border-gray-700 px-4 py-3">
+        <h1 className="text-xl font-bold text-white">Inicio</h1>
+      </div>
 
-      {/* 3. Añadan el formulario para crear posts */}
-      <CreatePostForm onSubmit={handleNewPost} />
+      <CreatePostForm onAddPost={handleAddPost} />
 
-      {/* 4. Muestren la lista de posts */}
-      <div className="space-y-4 mt-8">
-        {/* 'posts.map' ya no dará error porque 'posts' existe */}
+      <div>
         {posts.map((post) => (
-          <Post key={post.id} postData={post} />
+          <Post
+            key={post.id}
+            postData={post}
+            currentUserId={user.id}
+            onDeletePost={handleDeletePost}
+            onUpdatePost={handleUpdatePost}
+          />
         ))}
       </div>
     </div>

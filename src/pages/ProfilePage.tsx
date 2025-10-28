@@ -1,77 +1,70 @@
 import React from "react";
-import { useAuth } from "../contexts/AuthContext.tsx"; // 1. Importa tu hook
-import { useNavigate } from "react-router-dom"; // 2. Para redirigir al salir
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 export default function ProfilePage() {
-  // 3. Obtén el usuario y la función 'logout' del contexto
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const handleLogout = () => {
-    logout(); // Llama a la función del contexto
-    navigate("/login"); // Redirige al login
-  };
-
-  // 4. 'ProtectedRoute' ya evita esto, pero es buena práctica
   if (!user) {
-    return <div>Cargando perfil...</div>;
+    return (
+      <h1 className="text-3xl font-bold text-white">No estás logueado.</h1>
+    );
   }
 
-  // 5. Muestra los datos del usuario
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* --- Banner --- */}
-      <img
-        src={user.coverPicUrl}
-        alt="Foto de portada"
-        className="w-full h-48 object-cover rounded-t-lg"
-      />
+    <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      {/* --- Banner o Foto de Portada --- */}
+      <div>
+        <img
+          src={user.coverPicUrl}
+          alt="Foto de portada"
+          className="w-full h-48 object-cover"
+        />
+      </div>
 
-      {/* --- Contenedor de Info --- */}
-      <div className="bg-gray-800 p-6 rounded-b-lg shadow-lg">
-        {/* --- Foto y Botón de Salir --- */}
-        <div className="flex justify-between items-start -mt-20">
+      {/* --- Contenido Principal (Avatar, Info, Stats) --- */}
+      <div className="p-6">
+        {/* --- Avatar y Botón de Editar (flotantes) --- */}
+        <div className="relative">
           <img
             src={user.profilePicUrl}
             alt="Foto de perfil"
-            className="w-32 h-32 rounded-full border-4 border-gray-900"
+            className="w-32 h-32 rounded-full border-4 border-gray-900 -mt-20"
           />
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-red-600 transition duration-300 mt-20"
-          >
-            Cerrar Sesión
-          </button>
         </div>
 
-        {/* --- Datos del Usuario --- */}
-        <h1 className="text-3xl font-bold text-white mt-4">{user.name}</h1>
-        <p className="text-lg text-orange-400">@{user.username}</p>
+        {/* --- Información del Usuario --- */}
+        <div className="mt-4">
+          <h1 className="text-3xl font-bold text-white">{user.name}</h1>
+          <p className="text-gray-400 text-sm">@{user.username}</p>
 
-        <p className="text-gray-300 mt-4">{user.bio}</p>
+          <p className="text-gray-300 mt-4">{user.bio}</p>
 
-        {/* --- Estadísticas --- */}
-        <div className="flex space-x-6 mt-6 text-gray-400">
+          <p className="text-gray-400 text-sm mt-4">Email: {user.email}</p>
+        </div>
+
+        {/* --- Stats (Siguiendo/Seguidores) --- */}
+        <div className="flex space-x-6 mt-6 border-t border-gray-700 pt-4">
           <div>
             <span className="font-bold text-white">{user.following}</span>
-            <span className="ml-1">Siguiendo</span>
+            <span className="text-gray-400 ml-2">Siguiendo</span>
           </div>
           <div>
             <span className="font-bold text-white">{user.followers}</span>
-            <span className="ml-1">Seguidores</span>
+            <span className="text-gray-400 ml-2">Seguidores</span>
           </div>
         </div>
       </div>
 
-      {/* --- Feed de Posts del Usuario (Opcional) --- */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-white">Mis Publicaciones</h2>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-md mt-4">
-          <p className="text-gray-400">
-            (Aquí podrías filtrar los posts del JSON y mostrar solo los que
-            tengan el username: "{user.username}")
-          </p>
-        </div>
+      {/* --- Pestaña de Publicaciones (futuro) --- */}
+      <div className="border-t border-gray-700 px-6 py-4">
+        <h2 className="text-xl font-bold text-white">Publicaciones</h2>
+      </div>
+
+      {/* --- Feed del Usuario (aquí irían sus posts) --- */}
+      <div className="p-6">
+        <p className="text-gray-400 text-center">
+          Las publicaciones de {user.name} aparecerán aquí.
+        </p>
       </div>
     </div>
   );
