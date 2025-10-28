@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "members": ["miguel", "luna"],
+    "messages": [
+      { "sender": "miguel", "text": "¡Hola Luna! ¿Cómo estás?" },
+      { "sender": "luna", "text": "¡Hola Miguel! Todo bien, ¿y tú?" }
+    ]
+  },
+  {
+    "id": 2,
+    "members": ["miguel", "saul"],
+    "messages": [
+      { "sender": "saul", "text": "¿Ya probaste el nuevo juego?" },
+      { "sender": "miguel", "text": "Sí, está buenísimo 😎" }
+    ]
+  },
+  {
+    "id": 3,
+    "members": ["zulema", "juana"],
+    "messages": [
+      { "sender": "zulema", "text": "¿Terminaste el libro?" },
+      { "sender": "juana", "text": "Casi, me está encantando 📖" }
+    ]
+  }
+]
