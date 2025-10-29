@@ -1,30 +1,42 @@
-// src/chat/MessageInput.tsx
 import React, { useState } from "react";
 
-interface Props {
-  chatId: number;
+interface MessageInputProps {
+  chatId: string;
+  onSendMessage: (chatId: string, text: string) => void;
 }
 
-export default function MessageInput({ chatId }: Props) {
-  const [text, setText] = useState("");
-  const handleSend = () => {
-    if (!text.trim()) return;
-    // aquí guardarías en localStorage o mandar a backend
-    setText("");
+export default function MessageInput({
+  chatId,
+  onSendMessage,
+}: MessageInputProps) {
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+
+    onSendMessage(chatId, message.trim());
+    setMessage("");
   };
 
   return (
-    <div className="p-3 border-t border-gray-700">
-      <div className="flex gap-2">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="flex-1 p-2 rounded bg-gray-700"
-        />
-        <button onClick={handleSend} className="px-4 bg-orange-500 rounded">
-          Enviar
-        </button>
-      </div>
-    </div>
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 bg-gray-900 border-t border-gray-700 flex"
+    >
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        className="flex-1 bg-gray-700 text-white rounded-md px-4 py-2 focus:outline-none"
+        placeholder="Escribe un mensaje..."
+      />
+      <button
+        type="submit"
+        className="ml-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md"
+      >
+        Enviar
+      </button>
+    </form>
   );
 }

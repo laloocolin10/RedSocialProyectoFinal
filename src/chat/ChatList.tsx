@@ -2,26 +2,36 @@
 import React from "react";
 import type { Chat } from "../types/chat";
 
-interface Props {
+interface ChatListProps {
   chats: Chat[];
-  onSelectChat: (id: number) => void;
+  onSelectChat: (id: string) => void;
 }
 
-export default function ChatList({ chats, onSelectChat }: Props) {
+export default function ChatList({ chats, onSelectChat }: ChatListProps) {
   return (
-    <div>
-      {chats.map((chat) => (
-        <div
-          key={chat.id}
-          onClick={() => onSelectChat(chat.id)}
-          className="p-3 hover:bg-gray-700 cursor-pointer"
-        >
-          <div className="font-semibold">{chat.members.join(", ")}</div>
-          <div className="text-sm text-gray-400">
-            {chat.messages[chat.messages.length - 1]?.text ?? "Sin mensajes"}
+    <div className="space-y-2">
+      <h2 className="text-xl font-semibold mb-2">Tus Chats</h2>
+
+      {chats.length === 0 ? (
+        <p className="text-gray-400 text-sm">No tienes chats aún.</p>
+      ) : (
+        chats.map((chat) => (
+          <div
+            key={chat.id}
+            onClick={() => onSelectChat(chat.id)}
+            className="p-3 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition"
+          >
+            <div className="font-semibold text-orange-400">
+              {chat.members.join(", ")}
+            </div>
+            <div className="text-gray-300 text-sm">
+              {chat.messages.length > 0
+                ? chat.messages[chat.messages.length - 1].text
+                : "Sin mensajes"}
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }

@@ -10,7 +10,7 @@ import React, {
 } from "react";
 
 // ... (la interface User sigue igual)
-interface User {
+export interface User {
   id: string;
   email: string;
   name: string;
